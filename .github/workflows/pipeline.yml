@@ -1,0 +1,59 @@
+name: Knight Capital Advanced Guard
+
+on: [push, pull_request]
+
+jobs:
+  comprehensive-check:
+    name: Build and Quality Gate
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 1. Lấy mã nguồn (Checkout)
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: 2. Thiết lập Java JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # LỚP BẢO VỆ 1: QUÉT NHANH (Tư duy Lean - Bài 4 & 5)
+      - name: Layer 1 - Custom Script Scan (Fast Fail)
+        run: |
+          echo "🔍 Đang quét từ khóa nhạy cảm để ngăn chặn Power Peg..."
+          if grep -r "activatePowerPegMode" src/main/java; then
+            echo "❌ CẢNH BÁO: Phát hiện mã nguồn chết 'Power Peg'! Chặn Pipeline ngay lập tức."
+            exit 1
+          fi
+
+      # LỚP BẢO VỆ 2: CHẠY UNIT TEST & ĐO ĐỘ PHỦ (Bài 6)
+      - name: Layer 2 - Run Unit Tests & Generate Coverage
+        run: mvn clean test
+
+      # LỚP BẢO VỆ 3: PHÂN TÍCH SÂU (Tư duy CPI - Bài 7)
+      - name: Layer 3 - SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Tên_Project_Của_Bạn
+
+      # HIỂN THỊ BÁO CÁO CODE COVERAGE TRÊN GITHUB PR
+      - name: 4. Hiển thị báo cáo Code Coverage
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        if: always() # Chạy bước này ngay cả khi Unit Test thất bại để SV xem độ phủ
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 80
+          min-coverage-changed-files: 80
+          title: "📊 BÁO CÁO ĐỘ PHỦ MÃ NGUỒN (CODE COVERAGE)"
+          update-comment: true
+
+      # BƯỚC CUỐI: ĐÓNG GÓI (Chỉ chạy nếu mọi thứ ở trên đã Xanh)
+      - name: 5. Đóng gói sản phẩm (Build Artifact)
+        if: success()
+        run: mvn -B package -DskipTests
