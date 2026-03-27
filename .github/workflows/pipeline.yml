@@ -31,9 +31,16 @@ jobs:
       - name: Layer 1 - Custom Script Scan (Fast Fail)
         run: |
           echo "🔍 Đang quét từ khóa nhạy cảm để ngăn chặn Power Peg..."
-          if grep -r "activatePowerPegMode" src/main/java; then
-            echo "❌ CẢNH BÁO: Phát hiện mã nguồn chết 'Power Peg'! Chặn Pipeline ngay lập tức."
+          # Quét từ khóa 'activatePowerPegMode' trong toàn bộ thư mục src
+          # || true để tránh việc grep trả về lỗi 1 khi không tìm thấy keyword (làm dừng pipeline sớm)
+          BAD_CODE=$(grep -rl "activatePowerPegMode" src/main/java || true)
+          
+          if [ -n "$BAD_CODE" ]; then
+            echo "❌ THẢM HỌA: Phát hiện mã nguồn chết tại: $BAD_CODE"
+            echo "Dừng Pipeline ngay lập tức để bảo vệ hệ thống!"
             exit 1
+          else
+            echo "✅ Bộ lọc sạch: Không tìm thấy Power Peg code."
           fi
 
       # LỚP BẢO VỆ 2: CHẠY UNIT TEST & ĐO ĐỘ PHỦ (Bài 6)
