@@ -1,7 +1,7 @@
 public class TradingSystem {
     // Giả lập trạng thái của server
     // Trong sự cố Knight Capital, server 8 vẫn để biến này là true (Legacy code)
-    private boolean isPowerPegActive = true; 
+    private boolean isPowerPegActive = false; 
 
     /**
      * Hàm xử lý lệnh đã được điều chỉnh để trả về String phục vụ Unit Test.
