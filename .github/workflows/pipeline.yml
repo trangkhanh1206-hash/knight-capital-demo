@@ -52,7 +52,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=knight-capital-demo
+        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=trangkhanh1206-hash_knight-capital-demo
 
       # HIỂN THỊ BÁO CÁO CODE COVERAGE TRÊN GITHUB PR
       - name: 4. Hiển thị báo cáo Code Coverage
