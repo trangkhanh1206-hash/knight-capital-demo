@@ -12,7 +12,8 @@ public class TradingSystem {
         // Kiểm tra logic: Nếu nhận flag 1 và vẫn còn mã nguồn cũ
         if (flag == 1) {
             if (isPowerPegActive) {
-                return activatePowerPegMode();
+                //return activatePowerPegMode();
+				return startTrading();
             } else {
                 return newChildOrderRouting();
             }
@@ -21,7 +22,8 @@ public class TradingSystem {
     }
 
     // Hàm giả lập lỗi Power Peg (Xác chết mã nguồn)
-    private String activatePowerPegMode() {
+    //private String activatePowerPegMode() {
+	private String startTrading() {
         // Trong thực tế, đây là nơi vòng lặp vô hạn xảy ra
         System.err.println("!!! NGUY HIỂM: Chế độ Power Peg đang chạy !!!");
         return "POWER_PEG_ACTIVE"; 
